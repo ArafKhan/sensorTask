@@ -30,6 +30,30 @@ class SensorStatisticTaskTest extends AnyFlatSpec {
 
   }
 
+  "Sensor Statistic Task" should "round up average correctly" in {
+    val data = Seq(
+      ("s1", Some(3)),
+      ("s1", Some(6)),
+      ("s1", Some(9))
+    )
+    val expectedResult = Seq(
+      ("s1", Some(3), Some(6), Some(9))
+    )
+    assert(SensorStatisticTask.aggregateResult(data) == expectedResult)
+  }
+
+  "Sensor Statistic Task" should "round down average correctly" in {
+    val data = Seq(
+      ("s1", Some(3)),
+      ("s1", Some(6)),
+      ("s1", Some(10))
+    )
+    val expectedResult = Seq(
+      ("s1", Some(3), Some(6), Some(10))
+    )
+    assert(SensorStatisticTask.aggregateResult(data) == expectedResult)
+  }
+
   it should "return empty if no measurement" in {
     val data = Seq()
     val expectedResult = Seq()
