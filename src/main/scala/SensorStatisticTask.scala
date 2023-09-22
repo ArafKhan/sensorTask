@@ -38,8 +38,8 @@ class SensorStatisticTask {
       }
   }
 
-  def aggregateResult(inputs: Seq[(String, Option[Int])]): Seq[(String, (Int, Option[Int], Option[Int], Option[Int]))] = {
-    val hashMap: HashMap[String, (Int, Option[Int], Option[Int], Option[Int])] = new HashMap()
+  def aggregateResult(inputs: Seq[(String, Option[Int])]): Seq[(String, Option[Int], Option[Int], Option[Int])] = {
+    val hashMap: HashMap[String, (Int, Option[Int], Option[Double], Option[Int])] = new HashMap()
 
     inputs.foreach { x =>
       val sensor = x._1
@@ -55,12 +55,17 @@ class SensorStatisticTask {
         val newCount = count + 1
         val newMin = minOpt.map(Math.min(_, hum)).getOrElse(hum)
         val newMax = maxOpt.map(Math.max(_, hum)).getOrElse(hum)
-        val newAvg = avgOpt.map(x => (x * count + hum) / newCount).getOrElse(hum)
+        val newAvg: Double = avgOpt.map(x => (x * count + hum) / newCount).getOrElse(hum)
         hashMap.put(sensor, (newCount, Some(newMin), Some(newAvg), Some(newMax)))
       }
     }
 
-    val result = hashMap.toSeq.sortBy(_._2._3)(Ordering[Option[Int]].reverse)
+    val result = hashMap
+      .toSeq
+      .sortBy(_._2._3)(Ordering[Option[Double]].reverse)
+      .map{ x =>
+        (x._1, x._2._2, x._2._3.map(Math.round(_).toInt), x._2._4)
+      }
 
     println(s"Num of processed measurements: ${inputs.size}")
     println(s"Num of failed measurements: ${inputs.filter(_._2.isEmpty).size}\n")
@@ -70,9 +75,9 @@ class SensorStatisticTask {
 
     result.foreach { x =>
       val sensor = x._1
-      val min = x._2._2.getOrElse("NaN")
-      val avg = x._2._3.getOrElse("NaN")
-      val max = x._2._4.getOrElse("NaN")
+      val min = x._2.getOrElse("NaN")
+      val avg = x._3.getOrElse("NaN")
+      val max = x._4.getOrElse("NaN")
       println(s"$sensor,$min,$avg,$max")
     }
     result
