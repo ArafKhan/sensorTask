@@ -53,9 +53,9 @@ class SensorStatisticTask {
         val avgOpt = value._3
         val maxOpt = value._4
         val newCount = count + 1
-        val newMin = if (minOpt.isEmpty) hum else Math.min(minOpt.get, hum)
-        val newMax = if (maxOpt.isEmpty) hum else Math.max(maxOpt.get, hum)
-        val newAvg = if (avgOpt.isEmpty) hum else (avgOpt.get * count + hum) / newCount
+        val newMin = minOpt.map(Math.min(_, hum)).getOrElse(hum)
+        val newMax = maxOpt.map(Math.max(_, hum)).getOrElse(hum)
+        val newAvg = avgOpt.map(x => (x * count + hum) / newCount).getOrElse(hum)
         hashMap.put(sensor, (newCount, Some(newMin), Some(newAvg), Some(newMax)))
       }
     }
