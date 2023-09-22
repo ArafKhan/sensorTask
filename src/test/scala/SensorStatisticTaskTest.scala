@@ -17,32 +17,18 @@ class SensorStatisticTaskTest extends AnyFlatSpec {
 
   }
 
-  "Sensor Statistic Task" should "round average correctly" in {
+  it should "round up average correctly" in {
     val data = Seq(
       ("s1", Some(3)),
       ("s1", Some(6)),
-      ("s1", Some(9))
     )
     val expectedResult = Seq(
-      ("s1", Some(3), Some(6), Some(9))
-    )
-    assert(SensorStatisticTask.aggregateResult(data) == expectedResult)
-
-  }
-
-  "Sensor Statistic Task" should "round up average correctly" in {
-    val data = Seq(
-      ("s1", Some(3)),
-      ("s1", Some(6)),
-      ("s1", Some(9))
-    )
-    val expectedResult = Seq(
-      ("s1", Some(3), Some(6), Some(9))
+      ("s1", Some(3), Some(5), Some(6))
     )
     assert(SensorStatisticTask.aggregateResult(data) == expectedResult)
   }
 
-  "Sensor Statistic Task" should "round down average correctly" in {
+  it should "round down average correctly" in {
     val data = Seq(
       ("s1", Some(3)),
       ("s1", Some(6)),
@@ -50,6 +36,18 @@ class SensorStatisticTaskTest extends AnyFlatSpec {
     )
     val expectedResult = Seq(
       ("s1", Some(3), Some(6), Some(10))
+    )
+    assert(SensorStatisticTask.aggregateResult(data) == expectedResult)
+  }
+
+  it should "maintain correct intermediate average correctly to avoid rounding error at the end" in {
+    val data = Seq(
+      ("s1", Some(3)),
+      ("s1", Some(6)),
+      ("s1", Some(1))
+    )
+    val expectedResult = Seq(
+      ("s1", Some(1), Some(3), Some(6))
     )
     assert(SensorStatisticTask.aggregateResult(data) == expectedResult)
   }
