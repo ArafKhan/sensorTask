@@ -65,7 +65,7 @@ class SensorStatisticTask {
     println(s"Num of processed measurements: ${inputs.size}")
     println(s"Num of failed measurements: ${inputs.filter(_._2.isEmpty).size}\n")
 
-    println("Sensors with highest avg humidity\n")
+    println("Sensors with highest avg humidity:\n")
     println("sensor-id,min,avg,max")
 
     result.foreach { x =>
@@ -73,7 +73,7 @@ class SensorStatisticTask {
       val min = x._2._2.getOrElse("NaN")
       val avg = x._2._3.getOrElse("NaN")
       val max = x._2._4.getOrElse("NaN")
-      println(s"$sensor, $min, $avg, $max")
+      println(s"$sensor,$min,$avg,$max")
     }
     result
 
